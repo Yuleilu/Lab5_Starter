@@ -5,23 +5,24 @@ window.addEventListener("DOMContentLoaded", init);
 
 function init() {
   //variables are initialized by selecting certain IDs and tags in the html file
-  const selectVoice = document.getElementById("voice-select");
+  var selectVoice = document.getElementById("voice-select");
   const textToSpeak = document.getElementById("text-to-speak");
   const speakButton = document.querySelector("button");
   const face = document.querySelector("img");
   let synth = null;
+  let voices = [];
   // when document of global browser window object is loaded compltely,
-  window.addEventListener("load", () => {
+  window.addEventListener("load", function () {
     //creates a new SpeechSynthesis object
     synth = window.speechSynthesis;
-    const voices = synth.getVoices();
+    voices = synth.getVoices();
     //set the voice-select dropdown list with available voices
     voices.forEach((voice) => {
       const option = document.createElement("option");
       option.textContent = `${voice.name} (${voice.lang})`;
       option.setAttribute("data-lang", voice.lang);
       option.setAttribute("data-name", voice.name);
-      selectVoice.appendChild(option);
+      selectVoice.add(option);
     });
   });
   //fire an callbakc function when the button is clicked
@@ -38,11 +39,11 @@ function init() {
     });
     // speech is spoken using speak method of the SpeechSynthesis object
     synth.speak(utterance);
-    //show an open mouth image while the speech is being spoken
     face.src = "assets/images/smiling-open.png";
+    //show an open mouth image while the speech is being spoken
     //attach an event listener to the utterance object
     //When end is fired, updates the src attribute of the face element to smiling face
-    utterance.addEventListener("end", () => {
+    utterance.addEventListener("end", function () {
       if (!synth.pending) {
         face.src = "assets/images/smiling.png";
       }
