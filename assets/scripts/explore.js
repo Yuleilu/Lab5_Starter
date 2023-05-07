@@ -43,7 +43,9 @@ function init() {
     //attach an event listener to the utterance object
     //When end is fired, updates the src attribute of the face element to smiling face
     utterance.addEventListener("end", () => {
-      face.src = "assets/images/smiling.png";
+      if (!synth.pending) {
+        face.src = "assets/images/smiling.png";
+      }
     });
   });
 }
