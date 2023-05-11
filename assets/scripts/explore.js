@@ -5,26 +5,37 @@ window.addEventListener("DOMContentLoaded", init);
 
 function init() {
   //variables are initialized by selecting certain IDs and tags in the html file
-  var selectVoice = document.getElementById("voice-select");
+  const selectVoice = document.getElementById("voice-select");
   const textToSpeak = document.getElementById("text-to-speak");
   const speakButton = document.querySelector("button");
   const face = document.querySelector("img");
-  let synth = null;
-  let voices = [];
-  // when document of global browser window object is loaded compltely,
-  window.addEventListener("load", function () {
-    //creates a new SpeechSynthesis object
-    synth = window.speechSynthesis;
-    voices = synth.getVoices();
-    //set the voice-select dropdown list with available voices
-    voices.forEach((voice) => {
+  let synth = speechSynthesis;
+  function populateVoiceList() {
+    //check if objects exists (if speechSynthesis API is supported)
+    if (typeof speechSynthesis === "undefined") {
+      return;
+    }
+
+    const voices = speechSynthesis.getVoices();
+
+    for (let i = 0; i < voices.length; i++) {
       const option = document.createElement("option");
-      option.textContent = `${voice.name} (${voice.lang})`;
-      option.setAttribute("data-lang", voice.lang);
-      option.setAttribute("data-name", voice.name);
-      selectVoice.add(option);
-    });
-  });
+      option.textContent = `${voices[i].name} (${voices[i].lang})`;
+      option.setAttribute("data-lang", voices[i].lang);
+      option.setAttribute("data-name", voices[i].name);
+      selectVoice.appendChild(option);
+    }
+  }
+
+  populateVoiceList();
+  if (
+    typeof speechSynthesis !== "undefined" &&
+    speechSynthesis.onvoiceschanged !== undefined
+  ) {
+    //populateVoiceList function is called whenever the onvoiceschanged event is triggered
+    speechSynthesis.onvoiceschanged = populateVoiceList;
+  }
+
   //fire an callbakc function when the button is clicked
   speakButton.addEventListener("click", () => {
     //retrieves the selected option using selectedOptions[0]
